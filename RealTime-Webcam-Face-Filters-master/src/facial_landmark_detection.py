@@ -47,3 +47,36 @@ def draw_facial_landmarks(frame, landmarks):
         for x, y in face_landmarks:
             cv2.circle(frame, (x, y), 1, (0, 255, 0), -1)
     return frame
+
+
+def detect_face_orientation(landmarks):
+    """
+    Detect the orientation of the face (front, left, or right) based on landmarks.
+
+    Args:
+        landmarks (list): A list of facial landmarks.
+
+    Returns:
+        str: Orientation of the face ('front', 'left', 'right').
+    """
+    if not landmarks or len(landmarks[0]) == 0:
+        return None  # No landmarks detected
+
+    face_landmarks = landmarks[0]  # Assume a single face for simplicity
+
+    # Get coordinates for left eye, right eye, and nose tip
+    nose_tip = face_landmarks[1]      # Nose tip
+    left_eye = face_landmarks[33]     # Left eye outer corner
+    right_eye = face_landmarks[263]   # Right eye outer corner
+
+    # Calculate the horizontal distance between nose and eyes
+    left_dist = nose_tip[0] - left_eye[0]
+    right_dist = right_eye[0] - nose_tip[0]
+
+    # Determine orientation based on distances
+    if abs(left_dist - right_dist) < 10:  # Adjust threshold as needed
+        return "front"
+    elif left_dist > right_dist:
+        return "left"
+    else:
+        return "right"
